@@ -5,3 +5,5 @@ operations and activities happeneed inside the student organization management s
 
 ### Author
 Jameson Mark Carabot
+
+Jessa May Cajayon
