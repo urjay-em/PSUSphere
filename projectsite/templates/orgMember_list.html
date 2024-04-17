@@ -6,7 +6,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">List of Organizations</div>
+                        <div class="card-title">List of Organization Members</div>
                         <div class="card-category">Page Subtitle</div>
                     </div>
                     <br />
@@ -25,7 +25,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="pull-right">
-                                    <a href="{% url 'organization-add' %}" class="btn btn-success btn-rounded">Add Organization</a>
+                                    <a href="{% url 'orgMember-add' %}" class="btn btn-success btn-rounded">Add Member</a>
                                 </div>
                             </div>
                         </div>
@@ -33,32 +33,31 @@
                         <table class="table table-striped mt-3">
                             <thead>
                                 <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">College</th>
-                                    <th scope="col">Description</th>
+                                    <th scope="col">Student</th>
+                                    <th scope="col">Organization</th>
+                                    <th scope="col">Date Joined</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for object in object_list %}
-
-                                <tr>
-                                        <td>{{ object.name }}</td>
-                                        <td>{{ object.college }}</td>
-                                        <td>{{ object.description }}</td>
+                                {% for org_member in object_list %}
+                                    <tr>
+                                        <td>{{ org_member.student }}</td>
+                                        <td>{{ org_member.organization}}</td>
+                                        <td>{{ org_member.date_joined }}</td>
                                         <td>
-                                            <a href="{% url 'organization-update' pk=object.id %}">Edit</a>
-                                            <a href="organization_list/{{ object.id }}/>delete" class="text-danger">Delete</a>
+                                            <a href="orgMember_list/{{ org_member.id }}">Edit</a>
+                                            <a href="orgMember_list/{{ org_member.id }}/>delete" class="text-danger">Delete</a>
                                         </td>
-                                        <tr>
-                                            {% empty%}
-                                        </tr>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
                                         <td colspan="4" style="text-align: center">
-                                            <p> class=text-sm font-weight-bold mb-0">No Records Found</p>
+                                            <p class="text-sm font-weight-bold mb-0">No Records Found</p>
                                         </td>
-                                </tr> 
+                                    </tr> 
                                 {% endfor %}
-                            </tbody>
+                            </tbody>                                                        
                         </table>
                         {% include 'includes/pagination.html' %}
                     </div>

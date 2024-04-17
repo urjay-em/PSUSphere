@@ -16,14 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from studentorg.views import HomePageView, OrganizationList, OrganizationCreateView, OrganizationUpdateView
+from studentorg.views import HomePageView, OrganizationList, OrganizationCreateView, OrganizationUpdateView, OrgMemberList, orgMemberhomePageView, OrgMemberCreateView
 from studentorg import views
 
 urlpatterns = [
-    path("  admin/", admin.site.urls),
+    path("admin/", admin.site.urls),
     path('', views.HomePageView.as_view(), name='home'),
     path('organization_list', OrganizationList.as_view(), name='organization-list'),
     path('organization_list/add', OrganizationCreateView.as_view(), name='organization-add'),
     path('organization_list/<pk>', OrganizationCreateView.as_view(), name='organization-update'),
+    
 
+    path('orgMemberhome/', orgMemberhomePageView.as_view(), name='orgMemberhome'),
+    path('orgMemberList/', OrgMemberList.as_view(), name='orgMember-list'),
+    path('orgMember/add/', views.OrgMemberCreateView.as_view(), name='orgMember-add'),
+    path('orgmemeber_list/<pk>', OrgMemberCreateView.as_view(), name='orgMember-update')
 ]
+
+
