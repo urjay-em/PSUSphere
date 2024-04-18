@@ -76,7 +76,7 @@
                                         </a>
                                         <a href="#">
                                             <div class="notif-img"> 
-                                                <img src="assets/img/profile2.jpg" alt="Img Profile">
+                                                <img src="{% static 'img/profile.jpg' %}" alt="Img Profile">
                                             </div>
                                             <div class="notif-content">
                                                 <span class="block">
@@ -102,7 +102,7 @@
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#" aria-expanded="false"> <img src="assets/img/profile.jpg" alt="user-img" width="36" class="img-circle"><span >Hizrian</span></span> </a>
+                            <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#" aria-expanded="false"> <img src="{% static 'img/profile.jpg' %}" alt="user-img" width="36" class="img-circle"><span >Hizrian</span></span> </a>
                             <ul class="dropdown-menu dropdown-user">
                                 <li>
                                     <div class="user-box">
@@ -182,10 +182,9 @@
                                 <i class="la la-keyboard-o"></i>
                                 <p>Org. Members</p>
                             </a>
-                        </li>
                         <li class="nav-item">
-                            <a href="tables.html">
-                                <i class="la la-th"></i>
+                            <a href="{% url 'Student-list' %}">
+                                <i class="la la-keyboard-o"></i>
                                 <p>Student</p>
                             </a>
                         </li>
