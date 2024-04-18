@@ -33,12 +33,10 @@ class OrganizationDeleteView(DeleteView):
     template_name = 'org_del.html'
     success_url = reverse_lazy('organization-list')
     
-    
-    
-    
-    
-    
-    
+
+
+
+   
 class orgMemberhomePageView(ListView):
     model = OrgMember
     context_object_name = 'orgMemberhome'
