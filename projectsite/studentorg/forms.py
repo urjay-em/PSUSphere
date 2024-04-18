@@ -1,7 +1,7 @@
 from django.forms import ModelForm, TextInput, DateInput, Select
 
 from django import forms
-from .models import Organization, OrgMember
+from .models import Organization, OrgMember, Student
 
 class OrganizationForm(ModelForm):
     class Meta:
@@ -16,3 +16,8 @@ class OrgMemberForm(ModelForm):
             'student': TextInput(attrs={'class': 'form-control'}),  
             'date_joined': DateInput(attrs={'type': 'date'}),
         }
+
+class StudentForm(ModelForm):
+    class Meta:
+        model = Student
+        fields = "__all__"
