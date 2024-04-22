@@ -20,6 +20,7 @@ from studentorg.views import HomePageView, OrganizationList, OrganizationCreateV
 from studentorg import views
 from django.contrib.auth import views as auth_views
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', views.HomePageView.as_view(), name='home'),
@@ -27,19 +28,18 @@ urlpatterns = [
     path('organization_list/add', OrganizationCreateView.as_view(), name='organization-add'),
     path('organization_list/<pk>', OrganizationUpdateView.as_view(), name='organization-update'),
     path('organization_list/<pk>/delete', OrganizationDeleteView.as_view(), name='organization-delete'),
-    re_path(r'^login/$', auth_views.LoginView.as_view(template_name='login'), name='login'),
-    re_path(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
+   
     
 
    
-    path('orgMemberList', OrgMemberList.as_view(), name='orgMember-list'),
-    path('orgMemberList/add', OrgMemberCreateView.as_view(), name='orgMember-add'),
-    path('orgMemberList/<pk>', OrgMemberUpdateView.as_view(), name='orgMember-update'),
-    path('orgMemberList/<pk>/delete', OrgMemberDeleteView.as_view(), name='orgMember-delete'),
+    path('orgMemberList/', OrgMemberList.as_view(), name='orgMember-list'),
+    path('orgMemberList/add/', OrgMemberCreateView.as_view(), name='orgMember-add'),
+    path('orgMemberList/<pk>/', OrgMemberUpdateView.as_view(), name='orgMember-update'),
+    path('orgMemberList/<pk>/delete/', OrgMemberDeleteView.as_view(), name='orgMember-delete'),
 
 
 
-    path('studentList', StudentList.as_view(), name='Student-list'),
+    path('studentList', StudentList.as_view(), name='student-list'),
     path('studentList/add', StudentCreateView.as_view(), name='student-add'),
     path('orgMemberList/<pk>', StudentUpdateView.as_view(), name='student-update'),
     path('orgMemberList/<pk>/delete', StudentDeleteView.as_view(), name='student-delete'),
@@ -57,8 +57,9 @@ urlpatterns = [
     
     
     
-    re_path(r'^login/$', auth_views.LoginView.as_view(template_name='login'), name='login'),
+    re_path(r'^login/$', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     re_path(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
 ]
 
 
+    

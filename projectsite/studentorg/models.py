@@ -44,9 +44,10 @@ class OrgMember(BaseModel):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     date_joined = models.DateField()
-
+    
     def __str__(self):
-        return self.student.name if hasattr(self.student, 'name') else str(self.student)
+        return str(self.student) 
+        return f"{self.lastname}, {self.firstname}"
     
     
 

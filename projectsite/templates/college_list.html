@@ -16,7 +16,7 @@
                             <div class="col-md-6">
                                 <form class="navbar-form nav-search mr-md-3" action="">
                                     <div class="input-group">
-                                        <input type="text" placeholder="Search ..." class="form-control" />
+                                        <input type="text" placeholder="Search ..." class="form-control" name="q" />
                                         <div class="input-group-append">
                                             <span class="input-group-text">
                                                 <i class="la la-search search icon"></i>
@@ -44,8 +44,8 @@
                                 <tr>
                                     <td>{{ student.college_name }}</td>
                                     <td>
-                                        <a href="organization_list/{{ object.id }}">Edit</a>
-                                        <a href="organization_list/{{ object.id }}/delete" class="text-danger">Delete</a>
+                                        <a href="{% url 'college-update' pk=student.id %}">Edit</a>
+                                        <a href="{% url 'college-delete' pk=student.id %}" class="text-danger">Delete</a>
                                     </td>
                                 </tr> 
                                 {% endfor %}
