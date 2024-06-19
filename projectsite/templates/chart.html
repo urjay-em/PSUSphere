@@ -14,11 +14,11 @@
 <body>
 <div class="content">
   <div class="container-fluid" >
-      <h4 class="page-title">Dashboard charts.</h4>
+      <h4 class="page-title">ChartJS</h4>
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
           <div class="card" style="box-shadow: 4px 4px 12px #537188; border-radius: 6px;">
-            <div class="card-header" style="color:#4169E1 ">
+            <div class="card-header">
               <div class="card-title">Students Count Each Program</div>
             </div>
             <div class="card-body">
@@ -28,22 +28,22 @@
             </div>
           </div>
         </div>
-        <div class="col-md-12">
-          <div class="card" style="box-shadow: 4px 4px 12px #537188; border-radius: 6px;">
-            <div class="card-header">
-              <div class="card-title">Organization Count Each College</div>
+        <div class="col-md-6">
+            <div class="card" style="box-shadow: 4px 4px 12px #537188; border-radius: 6px;">
+                <div class="card-header" style="color: #6988E7; background-color: #f5f5f5;"> <!-- Add your desired background color here -->
+                    <div class="card-title">Organization Category</div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="organizationChart"></canvas> <!-- Canvas for the student chart -->
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-              <div class="chart-container" style="height: 400px;">
-                <canvas id="organizationChart"></canvas> <!-- Canvas for the student chart -->
-              </div>
-            </div>
-          </div>
         </div>
         <div class="col-md-12">
           <div class="card" style="box-shadow: 4px 4px 12px #537188; border-radius: 6px;">
             <div class="card-header">
-              <div class="card-title">Students Count Each Program</div>
+              <div class="card-title">Students Count by Program</div>
             </div>
             <div class="card-body">
               <div class="chart-container">
@@ -52,7 +52,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-12">
+        <div class="col-md-6">
           <div class="card" style="box-shadow: 4px 4px 12px #537188; border-radius: 6px;">
             <div class="card-header">
               <div class="card-title">Count of Students by Organization</div>
@@ -64,12 +64,23 @@
             </div>
           </div>
         </div>
+        <div class="col-md-6">
+          <div class="card" style="box-shadow: 4px 4px 12px #537188; border-radius: 6px;">
+            <div class="card-header">
+              <div class="card-title">Count of Students by Colleges</div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="collegePieChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
   </div>
 </div>
 
 <script>
-  
   function loadStudentChartData() {
       fetch("/student-count-by-program/")  // Update with your endpoint URL
         .then((response) => response.json())
@@ -105,59 +116,38 @@
         })
         .catch((error) => console.error("Error:", error));
   }
-function loadOrganizationChartData() {
+  function loadOrganizationChartData() {
     fetch("/organization-graph-data/")  // Update with your endpoint URL for organization data
-        .then((response) => response.json())
-        .then((data) => {
-            var labels = data.labels;
-            var counts = data.counts;
-            var organizationChart = document.getElementById("organizationChart").getContext("2d");
+      .then((response) => response.json())
+      .then((data) => {
+        var labels = data.labels;
+        var counts = data.counts;
+        var organizationChart = document.getElementById("organizationChart").getContext("2d");
 
-            // Define a palette of attractive colors
-            var colorPalette = [
-                '#CC5500', // no college
-                '#D10000', // CAH
-                '#FFFF00', // CBA
-                '#000075', // CCJE
-                '#800000', // CEAT
-                '#FF2400', // CHTM
-                '#FF007F', // Nursing
-                '#208320', // CS
-                '#1B3FAB', // CTE
-            ];
-
-            // Assign colors to each label
-            var backgroundColors = labels.map((label, index) => colorPalette[index % colorPalette.length]);
-
-            new Chart(organizationChart, {
-                type: "doughnut",
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Organization Counts',
-                        data: counts,
-                        backgroundColor: backgroundColors,
-                        borderColor: '#ffffff', // Border color
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'left', // Position the legend to the left side
-                            labels: {
-                                boxWidth: 20, // Adjust box width for better layout
-                                padding: 20, // Add padding between legend items
-                            }
-                        }
-                    }
-                }
-            });
+        new Chart(organizationChart, {
+          type: "doughnut",
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Organization Counts',
+              data: counts,
+              backgroundColor: [
+                '#FF6384', // Red
+                '#36A2EB', // Blue
+                '#FFCE56', // Yellow
+                // Add more colors as needed
+            ],
+              borderColor: '#ffffff', // Border color
+              borderWidth: 1
+            }]
+          },
+          options: {
+        responsive: true,
+        maintainAspectRatio: false,
+          }
         });
-}
+      })
+    }
     function loadPieChartStudentsData() {
       fetch("/pie-chart/students/")  // Endpoint for student data
         .then((response) => response.json())
@@ -230,18 +220,7 @@ function loadOrganizationChartData() {
               }]
             },
             options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'left', // Position the legend to the left side
-                            labels: {
-                                boxWidth: 20, // Adjust box width for better layout
-                                padding: 20, // Add padding between legend items
-                            }
-                        }
-                    }
+              responsive: true
             }
           });
         })

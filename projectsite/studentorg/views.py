@@ -14,6 +14,7 @@ from django.http import JsonResponse
 from datetime import datetime
 from django.db.models import Count
 from calendar import month_abbr
+from django.db import models    
 
 
 @method_decorator(login_required, name='dispatch')
@@ -53,10 +54,6 @@ class OrganizationDeleteView(DeleteView):
     model = Organization
     template_name = 'org_del.html'
     success_url = reverse_lazy('organization-list')
-    
-
-
-
    
 class orgMemberhomePageView(ListView):
     model = OrgMember
@@ -92,19 +89,13 @@ class OrgMemberList(ListView):
                                Q(date_joined__icontains=query))
                 
         return qs
-
-
-
-
-    
+   
 class OrgMemberCreateView(CreateView):
     model = OrgMember
     form_class = OrgMemberForm
     template_name = 'orgMember_add.html'
     success_url = reverse_lazy('orgMember-list')
-    
      
-    
 class OrgMemberUpdateView(UpdateView):
     model = OrgMember
     form_class = OrgMemberForm
@@ -115,11 +106,6 @@ class OrgMemberDeleteView(DeleteView):
     model = OrgMember
     template_name = 'orgMember_del.html'
     success_url = reverse_lazy('orgMember-list')
-
-
-
-
-
 
 class StudenthomePageView(ListView):
     model = Student
@@ -168,13 +154,7 @@ class StudentDeleteView(DeleteView):
     model = Student
     template_name = 'student_del.html'
     success_url = reverse_lazy('student-list')
-    
-    
-    
-    
-    
-    
-    
+     
 class CollegeList(ListView):
     model = College
     context_object_name = 'College'
@@ -191,8 +171,6 @@ class CollegeList(ListView):
         
         return qs
             
-    
-
 class CollegeCreateView(CreateView):
     model = College
     form_class = CollegeForm
@@ -209,10 +187,6 @@ class CollegeDeleteView(DeleteView):
     model = College
     template_name = 'college_del.html'
     success_url = reverse_lazy('college-list')
-    
-    
-    
-    
     
 class ProgramList(ListView):
     model = Program
@@ -260,152 +234,57 @@ class ChartView(ListView):
         pass
 
 
-def PieCountbySeverity(request):
-    query = '''
-    SELECT organization_id, COUNT(*) as count
-    FROM studentorg_orgmember
-    GROUP BY organization_id;
-    '''
-    data = {}
-    with connection.cursor() as cursor:
-        cursor.execute(query)
-        rows = cursor.fetchall()
+def StudentCountByProgram(request):
+    # Fetching student counts per program
+    program_counts = Student.objects.values('program__prog_name').annotate(count=Count('program')).order_by('-count')
 
-    if rows:
-        # Construct the dictionary with organization IDs as keys and count as values
-        data = {organization_id: count for organization_id, count in rows}
-    else:
-        # If no data is found, return an empty dictionary or appropriate response
-        data = {}
+    # Extracting labels (program names) and counts
+    labels = [item['program__prog_name'] for item in program_counts]
+    counts = [item['count'] for item in program_counts]
 
+    data = {
+        'labels': labels,
+        'counts': counts,
+    }
     return JsonResponse(data)
 
 
-def LineCountbyMonth(request):
-
-    current_year = datetime.now().year
-
-    result = {month: 0 for month in range(1, 13)}
-
-    incidents_per_month = Incident.objects.filter(date_time__year=current_year) \
-        .values_list('date_time', flat=True)
-
-    # Counting the number of incidents per month
-    for date_time in incidents_per_month:
-        month = date_time.month
-        result[month] += 1
-
-    # If you want to convert month numbers to month names, you can use a dictionary mapping
-    month_names = {
-        1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
-        7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
+def OrganizationGraphData(request):
+    # Query to get the count of organizations grouped by the college's name
+    organizations = Organization.objects.values('college__college_name').annotate(count=Count('id')).order_by('college__college_name')
+    
+    # Prepare the data for the graph
+    labels = [org['college__college_name'] if org['college__college_name'] else 'No College' for org in organizations]
+    counts = [org['count'] for org in organizations]
+    
+    data = {
+        'labels': labels,
+        'counts': counts,
     }
-
-    result_with_month_names = {
-        month_names[int(month)]: count for month, count in result.items()}
-
-    return JsonResponse(result_with_month_names)
+    
+    return JsonResponse(data)
 
 
-def MultilineIncidentTop3Country(request):
-
-    query = '''
-        SELECT 
-        fl.country,
-        strftime('%m', fi.date_time) AS month,
-        COUNT(fi.id) AS incident_count
-    FROM 
-        fire_incident fi
-    JOIN 
-        fire_locations fl ON fi.location_id = fl.id
-    WHERE 
-        fl.country IN (
-            SELECT 
-                fl_top.country
-            FROM 
-                fire_incident fi_top
-            JOIN 
-                fire_locations fl_top ON fi_top.location_id = fl_top.id
-            WHERE 
-                strftime('%Y', fi_top.date_time) = strftime('%Y', 'now')
-            GROUP BY 
-                fl_top.country
-            ORDER BY 
-                COUNT(fi_top.id) DESC
-            LIMIT 3
-        )
-        AND strftime('%Y', fi.date_time) = strftime('%Y', 'now')
-    GROUP BY 
-        fl.country, month
-    ORDER BY 
-        fl.country, month;
-    '''
-
-    with connection.cursor() as cursor:
-        cursor.execute(query)
-        rows = cursor.fetchall()
-
-    # Initialize a dictionary to store the result
-    result = {}
-
-    # Initialize a set of months from January to December
-    months = set(str(i).zfill(2) for i in range(1, 13))
-
-    # Loop through the query results
-    for row in rows:
-        country = row[0]
-        month = row[1]
-        total_incidents = row[2]
-
-        # If the country is not in the result dictionary, initialize it with all months set to zero
-        if country not in result:
-            result[country] = {month: 0 for month in months}
-
-        # Update the incident count for the corresponding month
-        result[country][month] = total_incidents
-
-    # Ensure there are always 3 countries in the result
-    while len(result) < 3:
-        # Placeholder name for missing countries
-        missing_country = f"Country {len(result) + 1}"
-        result[missing_country] = {month: 0 for month in months}
-
-    for country in result:
-        result[country] = dict(sorted(result[country].items()))
-
-    return JsonResponse(result)
+def chart_students(request):
+    program_counts = Program.objects.annotate(student_count=models.Count('student'))
+    labels = [program.prog_name for program in program_counts]
+    counts = [program.student_count for program in program_counts]
+    return JsonResponse({'labels': labels, 'counts': counts})
 
 
-def multipleBarbySeverity(request):
-    query = '''
-    SELECT 
-        fi.severity_level,
-        strftime('%m', fi.date_time) AS month,
-        COUNT(fi.id) AS incident_count
-    FROM 
-        fire_incident fi
-    GROUP BY fi.severity_level, month
-    '''
+def chart_org_members(request):
+    org_counts = Organization.objects.annotate(member_count=models.Count('orgmember'))
+    labels = [org.name for org in org_counts]
+    counts = [org.member_count for org in org_counts]
+    return JsonResponse({'labels': labels, 'counts': counts})
 
-    with connection.cursor() as cursor:
-        cursor.execute(query)
-        rows = cursor.fetchall()
 
-    result = {}
-    months = set(str(i).zfill(2) for i in range(1, 13))
-
-    for row in rows:
-        level = str(row[0])  # Ensure the severity level is a string
-        month = row[1]
-        total_incidents = row[2]
-
-        if level not in result:
-            result[level] = {month: 0 for month in months}
-
-        result[level][month] = total_incidents
-
-    # Sort months within each severity level
-    for level in result:
-        result[level] = dict(sorted(result[level].items()))
-
-    return JsonResponse(result)
+def chart_colleges(request):
+    # Query the database to get data for the college pie chart
+    # For example, let's say you want to count the number of students per college
+    college_counts = College.objects.annotate(student_count=models.Count('program__student'))
+    labels = [college.college_name for college in college_counts]
+    counts = [college.student_count for college in college_counts]
+    
+    # Return the data as JSON response with a unique name
+    return JsonResponse({'college_labels': labels, 'college_counts': counts})
